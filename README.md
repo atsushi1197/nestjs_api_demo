@@ -71,3 +71,8 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## DB Migrate
+
+psql -h localhost -p [host_post] -U [username] -d [db_name]
+GRANT CONNECT ON DATABASE nestjs TO [username]

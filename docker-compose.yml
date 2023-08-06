@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  nestjs_app:
+    build: .
+    tty: true
+    ports:
+      - 3050:3050
+      - 5555:5555
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - nestjs_db
+  nestjs_db:
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    restart: always
+    ports:
+      - '${FORWARD_DB_PORT:-5432}:5432'
+    volumes:
+      - ./db/postgres/init.d:/docker-entrypoint-initdb.d
+      - ./db/postgres/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+  nestjs_pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - 81:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - ./db/postgres/pgadmin:/var/lib/pgadmin
+    depends_on:
+      - nestjs_db
